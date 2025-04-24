@@ -1,5 +1,7 @@
 # Book Shop API
 
+Access the application at http://localhost:3000
+
 A RESTful API for a book shop that allows users to browse books, register, login, and manage book reviews.
 
 ## Features
@@ -71,9 +73,6 @@ npm install
 ```
 npm run dev
 ```
-
-4. Access the application at http://localhost:3000
-
 ## License
 
 Apache-2.0 license 

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Shop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add direct script test -->
+    <script>
+        console.log('Inline script is running');
+        
+        // Simple function to test button clicks directly
+        function directNavigateToBooks() {
+            console.log('Direct navigation function called');
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('home-section').classList.remove('active-section');
+            document.getElementById('books-section').classList.remove('hidden');
+            document.getElementById('books-section').classList.add('active-section');
+            
+            // Fetch books directly
+            fetch('/api/books')
+                .then(response => response.json())
+                .then(books => {
+                    console.log('Books loaded:', books);
+                    const booksContainer = document.getElementById('books-container');
+                    booksContainer.innerHTML = '';
+                    
+                    books.forEach(book => {
+                        // Generate a color for the book cover
+                        let hash = 0;
+                        for (let i = 0; i < book.title.length; i++) {
+                            hash = book.title.charCodeAt(i) + ((hash << 5) - hash);
+                        }
+                        const color = `hsl(${hash % 360}, 70%, 80%)`;
+                        
+                        const bookCard = document.createElement('div');
+                        bookCard.classList.add('book-card');
+                        bookCard.innerHTML = `
+                            <div class="book-image" style="background-color: ${color};">
+                                <div class="book-cover-title">${book.title}</div>
+                            </div>
+                            <div class="book-info">
+                                <h3 class="book-title">${book.title}</h3>
+                                <p class="book-author">by ${book.author}</p>
+                                <p class="book-price">$${book.price.toFixed(2)}</p>
+                            </div>
+                        `;
+                        booksContainer.appendChild(bookCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching books:', error);
+                    document.getElementById('books-container').innerHTML = 
+                        '<p>Error loading books. Please try again later.</p>';
+                });
+        }
+        
+        // Run when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM content loaded from inline script');
+            
+            // Add direct event listeners
+            const browseBtn = document.getElementById('browse-books-btn');
+            if (browseBtn) {
+                console.log('Browse button found by inline script');
+                browseBtn.addEventListener('click', directNavigateToBooks);
+            } else {
+                console.error('Browse button NOT found by inline script');
+            }
+            
+            const allBooksNav = document.getElementById('all-books-nav');
+            if (allBooksNav) {
+                allBooksNav.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    directNavigateToBooks();
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Book Shop</h1>
+            <nav>
+                <ul>
+                    <li><a href="#" id="all-books-nav">All Books</a></li>
+                    <li><a href="#" id="search-nav">Search</a></li>
+                    <li><a href="#" id="login-nav">Login</a></li>
+                    <li><a href="#" id="register-nav">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home-section" class="active-section">
+            <h2>Welcome to the Book Shop</h2>
+            <p>Discover a world of knowledge through our extensive collection of books. Find your next favorite read today!</p>
+            <button id="browse-books-btn" class="btn"><i class="fas fa-book-open"></i> Browse Books</button>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-search"></i>
+                    <h3>Easy Search</h3>
+                    <p>Find books by title, author, or ISBN</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-star"></i>
+                    <h3>Reviews</h3>
+                    <p>Read and write book reviews</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-user"></i>
+                    <h3>Personalized</h3>
+                    <p>Create your account for a better experience</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- All Books Section -->
+        <section id="books-section" class="section hidden">
+            <h2>All Books</h2>
+            <div id="books-container" class="books-grid">
+                <!-- Books will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="search-section" class="section hidden">
+            <h2>Search Books</h2>
+            <div class="search-container">
+                <div class="search-option">
+                    <label for="search-type">Search by:</label>
+                    <select id="search-type">
+                        <option value="title">Title</option>
+                        <option value="author">Author</option>
+                        <option value="isbn">ISBN</option>
+                    </select>
+                </div>
+                <div class="search-input">
+                    <input type="text" id="search-query" placeholder="Enter search term...">
+                    <button id="search-btn" class="btn">Search</button>
+                </div>
+            </div>
+            <div id="search-results" class="books-grid">
+                <!-- Search results will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Book Details Section -->
+        <section id="book-details-section" class="section hidden">
+            <button id="back-btn" class="btn">← Back</button>
+            <div id="book-details-container">
+                <!-- Book details will be loaded here -->
+            </div>
+            <div id="reviews-container">
+                <h3>Reviews</h3>
+                <div id="reviews-list">
+                    <!-- Reviews will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login-section" class="section hidden">
+            <h2>Login</h2>
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="register-link">Register here</a></p>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register-section" class="section hidden">
+            <h2>Register</h2>
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="register-name">Name:</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email:</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password:</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" id="login-link">Login here</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Book Shop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Try both approaches for loading the external script -->
+    <script src="js/app.js"></script>
+    <script>
+        // Another attempt to load the script if the first one fails
+        console.log('Secondary script loading check');
+        setTimeout(() => {
+            console.log('Checking if buttons have event listeners after delay');
+            const browseBtn = document.getElementById('browse-books-btn');
+            if (browseBtn && !browseBtn._hasClickListener) {
+                console.log('Adding backup event listener to browse button');
+                browseBtn.addEventListener('click', directNavigateToBooks);
+                browseBtn._hasClickListener = true;
+            }
+        }, 1000);
+    </script>
+</body>
+</html> 

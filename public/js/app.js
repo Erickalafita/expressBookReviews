@@ -161,9 +161,13 @@ function submitReview(event) {
     successDiv.className = 'success-message';
     successDiv.innerHTML = 'Your review has been submitted successfully!';
     
+    // Generate a unique ID for this review so we can delete it later
+    const reviewId = 'review-' + Date.now();
+    
     // Add the new review to the reviews list
     const newReview = document.createElement('div');
     newReview.className = 'review';
+    newReview.id = reviewId;
     
     const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
     
@@ -174,10 +178,19 @@ function submitReview(event) {
         </div>
         <span class="review-date">Just now</span>
         <p class="review-comment">${comment}</p>
+        <div class="review-actions">
+            <button class="delete-review-btn" data-review-id="${reviewId}">
+                <i class="fas fa-trash"></i> Delete Review
+            </button>
+        </div>
     `;
     
     // Insert the new review at the top of the list
     reviewsListEl.insertBefore(newReview, reviewsListEl.firstChild);
+    
+    // Add event listener to the delete button
+    const deleteBtn = newReview.querySelector('.delete-review-btn');
+    deleteBtn.addEventListener('click', deleteReview);
     
     // Add success message after the form
     const reviewForm = document.getElementById('add-review-form');
@@ -193,6 +206,40 @@ function submitReview(event) {
             successDiv.parentNode.removeChild(successDiv);
         }
     }, 3000);
+}
+
+// Function to delete a review
+function deleteReview(event) {
+    const reviewId = event.currentTarget.dataset.reviewId;
+    const reviewElement = document.getElementById(reviewId);
+    
+    if (reviewElement) {
+        // Ask for confirmation
+        if (confirm('Are you sure you want to delete this review?')) {
+            // Show delete success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = 'Review deleted successfully!';
+            reviewsListEl.insertBefore(successDiv, reviewsListEl.firstChild);
+            
+            // Remove the review with animation
+            reviewElement.classList.add('review-deleting');
+            
+            // Remove the review after animation
+            setTimeout(() => {
+                if (reviewElement.parentNode) {
+                    reviewElement.parentNode.removeChild(reviewElement);
+                }
+            }, 300);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+    }
 }
 
 async function showBookDetails(bookId) {
@@ -231,8 +278,23 @@ async function showBookDetails(bookId) {
             </div>
         `;
         
-        // Dummy reviews for demo
+        // Add example reviews including one from "You" (current user) with a delete button
+        const yourReviewId = 'review-example-' + Date.now();
+        
         reviewsListEl.innerHTML = `
+            <div class="review" id="${yourReviewId}">
+                <div class="review-header">
+                    <span class="review-user">You</span>
+                    <span class="review-rating">★★★★☆</span>
+                </div>
+                <span class="review-date">Yesterday</span>
+                <p class="review-comment">I found this book quite engaging. The plot was well-structured and the characters were believable.</p>
+                <div class="review-actions">
+                    <button class="delete-review-btn" data-review-id="${yourReviewId}">
+                        <i class="fas fa-trash"></i> Delete Review
+                    </button>
+                </div>
+            </div>
             <div class="review">
                 <div class="review-header">
                     <span class="review-user">John Doe</span>
@@ -250,6 +312,12 @@ async function showBookDetails(bookId) {
                 <p class="review-comment">Couldn't put it down. Definitely a must-read!</p>
             </div>
         `;
+        
+        // Add event listener to the delete button in the example review
+        const deleteBtn = document.querySelector(`[data-review-id="${yourReviewId}"]`);
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', deleteReview);
+        }
         
         showSection(bookDetailsSectionEl);
     } catch (error) {

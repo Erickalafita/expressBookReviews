@@ -3,13 +3,14 @@ let homeSectionEl, booksSectionEl, searchSectionEl, bookDetailsSectionEl, loginS
 let booksContainerEl, searchResultsEl, bookDetailsContainerEl, reviewsListEl;
 let browseBooksBtnEl, allBooksNavEl, searchNavEl, loginNavEl, registerNavEl, backBtnEl, searchBtnEl; 
 let searchTypeEl, searchQueryEl, loginLinkEl, registerLinkEl;
-let loginFormEl, registerFormEl;
+let loginFormEl, registerFormEl, reviewFormEl;
 
 // State
 let currentSection = null;
 let previousSection = null;
 let user = null;
 let token = null;
+let currentBookId = null; // Add current book ID to store which book is being reviewed
 
 // API Base URL
 const API_URL = '/api';
@@ -135,9 +136,72 @@ function getRandomColor(title) {
     return `hsl(${h}, 70%, 80%)`;
 }
 
+// Add a function to handle review submission
+function submitReview(event) {
+    event.preventDefault();
+    
+    const ratingEl = document.getElementById('review-rating');
+    const commentEl = document.getElementById('review-comment');
+    
+    const rating = ratingEl.value;
+    const comment = commentEl.value;
+    
+    if (!rating || !comment) {
+        alert('Please select a rating and enter a comment.');
+        return;
+    }
+    
+    console.log('Submitting review:', { bookId: currentBookId, rating, comment });
+    
+    // In a real app, we would send this to the server
+    // For demo, we'll just add it to the UI
+    
+    // Create success message
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.innerHTML = 'Your review has been submitted successfully!';
+    
+    // Add the new review to the reviews list
+    const newReview = document.createElement('div');
+    newReview.className = 'review';
+    
+    const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
+    
+    newReview.innerHTML = `
+        <div class="review-header">
+            <span class="review-user">You</span>
+            <span class="review-rating">${stars}</span>
+        </div>
+        <span class="review-date">Just now</span>
+        <p class="review-comment">${comment}</p>
+    `;
+    
+    // Insert the new review at the top of the list
+    reviewsListEl.insertBefore(newReview, reviewsListEl.firstChild);
+    
+    // Add success message after the form
+    const reviewForm = document.getElementById('add-review-form');
+    reviewForm.appendChild(successDiv);
+    
+    // Clear the form
+    ratingEl.value = '';
+    commentEl.value = '';
+    
+    // Remove success message after 3 seconds
+    setTimeout(() => {
+        if (successDiv.parentNode) {
+            successDiv.parentNode.removeChild(successDiv);
+        }
+    }, 3000);
+}
+
 async function showBookDetails(bookId) {
     // For demo purposes, since we don't have individual book endpoints
     let book;
+    
+    // Store the current book ID
+    currentBookId = bookId;
+    
     try {
         const response = await fetch(`${API_URL}/books`);
         const books = await response.json();
@@ -226,6 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginFormEl = document.getElementById('login-form');
     registerFormEl = document.getElementById('register-form');
+    
+    // Get review form element
+    reviewFormEl = document.getElementById('review-form');
     
     // Set initial section
     currentSection = homeSectionEl;
@@ -324,6 +391,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             alert('Registration functionality is not implemented in demo mode.');
         });
+    }
+    
+    // Add event listener for review form submission
+    if (reviewFormEl) {
+        console.log('Review form found');
+        reviewFormEl.addEventListener('submit', submitReview);
+    } else {
+        console.error('Review form not found');
     }
     
     console.log('Initialization complete');

@@ -1,4 +1,4 @@
-# Book Shop API Project
+# Book Shop API
 
 A RESTful API for a book shop that allows users to browse books, register, login, and manage book reviews.
 
@@ -23,6 +23,30 @@ A RESTful API for a book shop that allows users to browse books, register, login
 - Search by Author
 - Search by Title
 
+## Live Demo
+
+The application has both backend API and a frontend interface:
+- API Endpoints: `/api/books`, `/api/books/isbn/:isbn`, etc.
+- Frontend Interface: A modern responsive UI for browsing books
+
+## API Endpoints
+
+### Book Routes
+- `GET /api/books` - Get all books
+- `GET /api/books/isbn/:isbn` - Get book by ISBN
+- `GET /api/books/author/:author` - Get books by author
+- `GET /api/books/title/:title` - Get books by title
+- `GET /api/books/:id/reviews` - Get reviews for a book
+
+### User Routes
+- `POST /api/users/register` - Register a new user
+- `POST /api/users/login` - Login a user
+- `GET /api/users/profile` - Get user profile (protected)
+
+### Review Routes
+- `POST /api/books/:id/reviews` - Add a review for a book (protected)
+- `DELETE /api/reviews/:id` - Delete a review (protected)
+
 ## Technologies Used
 - Node.js
 - Express.js
@@ -34,8 +58,8 @@ A RESTful API for a book shop that allows users to browse books, register, login
 
 1. Clone the repository
 ```
-git clone <repository-url>
-cd book-final-project
+git clone https://github.com/Erickalafita/expressBookReviews.git
+cd expressBookReviews
 ```
 
 2. Install dependencies
@@ -43,64 +67,13 @@ cd book-final-project
 npm install
 ```
 
-3. Create a `.env` file in the root directory with the following variables:
-```
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/bookshop
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=7d
-```
-
-4. Make sure MongoDB is running on your local machine or update the connection string in `.env` to point to your MongoDB instance.
-
-## Running the Application
-
-1. Start the server
+3. Start the server
 ```
 npm run dev
 ```
 
-2. Seed the database with sample data
-```
-GET http://localhost:3000/api/seed
-```
-
-3. Test the Node.js client (in a separate terminal window)
-```
-node src/bookClientTest.js
-```
-
-## API Endpoints
-
-### User Routes
-- `POST /api/users/register` - Register a new user
-- `POST /api/users/login` - Login a user
-- `GET /api/users/profile` - Get user profile (protected)
-
-### Book Routes
-- `GET /api/books` - Get all books
-- `GET /api/books/isbn/:isbn` - Get book by ISBN
-- `GET /api/books/author/:author` - Get books by author
-- `GET /api/books/title/:title` - Get books by title
-- `GET /api/books/:id/reviews` - Get reviews for a book
-- `POST /api/books/:id/reviews` - Add a review for a book (protected)
-- `POST /api/books` - Create a new book (protected)
-
-### Review Routes
-- `DELETE /api/reviews/:id` - Delete a review (protected)
-
-## Testing
-
-You can use Postman or any API client to test the endpoints. Sample credentials:
-
-- Regular User:
-  - Email: user@example.com
-  - Password: password123
-
-- Admin User:
-  - Email: admin@example.com
-  - Password: password123
+4. Access the application at http://localhost:3000
 
 ## License
 
-ISC 
+Apache-2.0 license 
